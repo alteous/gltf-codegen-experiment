@@ -1,3 +1,5 @@
+
+/// Docs.
 #[gltf_codegen2::hello]
 fn world() {}
 
