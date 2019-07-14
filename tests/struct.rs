@@ -1,4 +1,4 @@
-use gltf_codegen2::Wrapper;
+use gltf_codegen::Wrapper;
 use std::marker;
 
 #[derive(Debug)]

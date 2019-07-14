@@ -1,5 +1,5 @@
 [package]
-name = "gltf-codegen2"
+name = "gltf-codegen"
 version = "0.1.0"
 authors = ["David Harvey-Macaulay <alteous@outlook.com>"]
 edition = "2018"
