@@ -45,8 +45,18 @@ fn stringify(item: &quote::ToTokens) -> String {
     token_stream.to_string()
 }
 
-fn parse_named_fields(named_fields: syn::FieldsNamed) -> Vec<proc_macro2::TokenStream> {
+fn is_trivial_type(ident: &syn::Ident) -> bool {
+    ["bool", "u32", "i32", "String", "RawValue"]
+        .iter()
+        .find(|x| ident == x)
+        .is_some()
+}
+
+fn parse_named_fields(named_fields: syn::FieldsNamed)
+    -> (Vec<proc_macro2::TokenStream>, Vec<proc_macro2::TokenStream>)
+{
     let mut parsed_fields = vec![];
+    let mut parsed_impls = vec![];
     for field in named_fields.named.iter() {
         let ident = field.ident.as_ref().unwrap();
         let _docs = extract_documentation(&field.attrs).unwrap_or_else(|| "?".to_string());
@@ -70,23 +80,39 @@ fn parse_named_fields(named_fields: syn::FieldsNamed) -> Vec<proc_macro2::TokenS
                     pub #ident : #type_path,
                 }
             );
-        } else if segment.ident == "u32" {
+            parsed_impls.push(
+                quote! {
+                    pub fn #ident (&mut self, index: u32) -> &mut Self {
+                        self.#ident = Index::new(index);
+                        self
+                    }
+                }
+            );
+        } else if is_trivial_type(&segment.ident) {
             parsed_fields.push(
                 quote! {
                     pub #ident : #type_path,
+                }
+            );
+            parsed_impls.push(
+                quote! {
+                    pub fn #ident (&mut self, #ident: #type_path ) -> &mut Self {
+                        self.#ident = #ident;
+                        self
+                    }
                 }
             );
         } else {
             panic!("unknown type `{}`", stringify(&field.ty));
         }
     }
-    parsed_fields
+    (parsed_fields, parsed_impls)
 }
 
 #[proc_macro_derive(Wrapper)]
 pub fn derive_wrapper(input: TokenStream) -> TokenStream {
     let item: syn::ItemStruct = syn::parse_macro_input!(input);
-    let fields = match item.fields {
+    let (fields, impls) = match item.fields {
         syn::Fields::Named(named_fields) => parse_named_fields(named_fields),
         _ => panic!("#[derive(Wrapper)] only works on structs with named fields"),
     };
@@ -96,6 +122,12 @@ pub fn derive_wrapper(input: TokenStream) -> TokenStream {
         struct GeneratedStruct {
             #(
                 #fields
+            )*
+        }
+
+        impl GeneratedStruct {
+            #(
+                #impls
             )*
         }
     };
