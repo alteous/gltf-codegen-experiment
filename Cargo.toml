@@ -5,3 +5,5 @@ authors = ["David Harvey-Macaulay <david@harvey-macaulay.com>"]
 edition = "2018"
 
 [dependencies]
+serde = "1.0"
+toml = "0.4"
