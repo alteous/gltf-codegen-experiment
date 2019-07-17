@@ -1,9 +1,7 @@
 [package]
 name = "gltf-codegen-toml"
 version = "0.1.0"
-authors = ["David Harvey-Macaulay <alteous@outlook.com>"]
+authors = ["David Harvey-Macaulay <david@harvey-macaulay.com>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
