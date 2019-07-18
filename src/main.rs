@@ -59,7 +59,7 @@ fn write_struct(
     let docs = meta["docs"].as_str().unwrap();
     writeln!(output, "/// {}", docs)?;
     writeln!(output, "#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]")?;
-    writeln!(output, "struct {} {{", name)?;
+    writeln!(output, "struct {}Json {{", name)?;
     for (name, field) in fields {
         let docs = field["docs"].as_str().unwrap();
         let ty = match field["ty"].as_str().unwrap() {
@@ -81,6 +81,50 @@ fn write_struct(
     Ok(())
 }
 
+fn write_struct_accessor(
+    output: &mut dyn io::Write,
+    name: &str,
+    meta: &Table,
+    fields: &Table,
+) -> UnitResult {
+    let docs = meta["docs"].as_str().unwrap();
+    writeln!(output, "/// {}", docs)?;
+    writeln!(output, "#[derive(Clone, Debug)]")?;
+    writeln!(output, "struct {}<'a> {{", name)?;
+    writeln!(output, "    pub(crate) document: &'a Document,")?;
+    writeln!(output, "    pub(crate) json: &'a {}Json,", name)?;
+    writeln!(output, "}}")?;
+    newline(output)?;
+
+    writeln!(output, "impl<'a> {}<'a> {{", name)?;
+    for (name, field) in fields {
+        let docs = field["docs"].as_str().unwrap();
+        writeln!(output, "    /// {}", docs)?;
+        match field["ty"].as_str().unwrap() {
+            "Index" => {
+                let of = field["of"].as_str().unwrap();
+                writeln!(output, "    pub fn {}(&self) -> {}<'a> {{", name, of)?;
+                writeln!(output, "        self.document.get(&self.{})", name)?;
+                writeln!(output, "    }}")?;
+            },
+            "String" => {
+                writeln!(output, "    pub fn {}(&self) -> &'a str {{", name)?;
+                writeln!(output, "        self.{}.as_str()", name)?;
+                writeln!(output, "    }}")?;
+            },
+            "Enum" => {
+                let of = field["of"].as_str().unwrap();
+                writeln!(output, "    pub fn {}(&self) -> {} {{", name, of)?;
+                writeln!(output, "        self.{}.unwrap()", name)?;
+                writeln!(output, "    }}")?;
+            },
+            _ => panic!("unknown type"),
+        };
+    }
+    writeln!(output, "}}")?;
+    Ok(())
+}
+
 fn run() -> UnitResult {
     let toml_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/toml");
     let mut output = io::stdout();
@@ -97,6 +141,7 @@ fn run() -> UnitResult {
             "struct" => {
                 let fields = value["fields"].as_table().unwrap();
                 write_struct(&mut output, &name, meta, fields)?;
+                write_struct_accessor(&mut output, &name, meta, fields)?;
             },
             "enum" => {
                 let ty = meta["ty"].as_str().unwrap();
