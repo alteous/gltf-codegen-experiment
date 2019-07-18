@@ -1,0 +1,8 @@
+[meta]
+kind = "struct"
+docs = "A buffer points to binary geometry, animation, or skins."
+
+[fields]
+uri = { ty = "String", docs = "URI to buffer data." }
+foo = { ty = "Index", of = "Accessor", docs = "Index of accessor."  }
+bar = { ty = "Enum", of = "ComponentType", docs = "Component type." }

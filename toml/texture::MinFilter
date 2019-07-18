@@ -1,0 +1,8 @@
+[meta]
+docs = "Minification filter."
+kind = "enum"
+ty = "integer"
+
+[values]
+Nearest = { value = 9728, docs = "Nearest filter." }
+Linear = { value = 9729, docs = "Linear filter." }
