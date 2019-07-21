@@ -1,0 +1,43 @@
+[meta]
+id = "accessor::Accessor"
+kind = "Struct"
+docs = "A typed view into a buffer view."
+
+[fields.buffer_view]
+ty = "Index"
+of = "buffer::View"
+json = "bufferView"
+docs = "The parent buffer view this accessor reads from."
+
+[fields.byte_offset]
+ty = "Integer"
+json = "byteOffset"
+docs = "The number of components within the buffer view."
+default = "0"
+
+[fields.data_type]
+ty = "Enum"
+of = "accessor::DataType"
+json = "componentType"
+docs = "The data type of components in the attribute."
+
+[fields.dimensions]
+ty = "Enum"
+of = "accessor::Dimensions"
+json = "type"
+docs = "Specifies if the attribute is a scalar, vector, or matrix."
+
+[fields.min]
+ty = "Option"
+of = "serde_json::value::RawValue"
+docs = "Minimum value of each component in this attribute."
+
+[fields.max]
+ty = "Option"
+of = "serde_json::value::RawValue"
+docs = "Maximum value of each component in this attribute."
+
+[fields.normalized]
+ty = "Bool"
+docs = "Specifies whether integer data values should be normalized."
+default = "false"

@@ -1,8 +1,0 @@
-[meta]
-kind = "enum"
-ty = "string"
-docs = "Component type."
-
-[values]
-"F32" = { docs = "32 bit floating point" }
-"I32" = { docs = "32 bit signed integer" }
