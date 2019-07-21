@@ -1,5 +1,6 @@
 [meta]
-id = "accessor::Accessor"
+ident = "Accessor"
+module = "accessor"
 kind = "Struct"
 docs = "A typed view into a buffer view."
 

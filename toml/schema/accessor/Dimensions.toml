@@ -1,0 +1,15 @@
+[meta]
+ident = "Dimensions"
+module = "accessor"
+kind = "Enum"
+of = "String"
+docs = "Specifies whether an attribute, vector, or matrix."
+
+[values]
+Scalar = { value = "SCALAR", docs = "Scalar quantity" }
+Vec2 = { value = "VEC2", docs = "2D vector." }
+Vec3 = { value = "VEC3", docs = "3D vector." }
+Vec4 = { value = "VEC4", docs = "4D vector." }
+Mat2 = { value = "MAT2", docs = "2x2 matrix." }
+Mat3 = { value = "MAT3", docs = "3x3 matrix." }
+Mat4 = { value = "MAT4", docs = "4x4 matrix." }

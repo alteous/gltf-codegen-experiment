@@ -1,0 +1,16 @@
+[meta]
+ident = "DataType"
+module = "accessor"
+kind = "Enum"
+of = "Integer"
+docs = "The component data type."
+
+[values]
+I8 = { value = 5120, docs = "Corresponds to `GL_BYTE`." }
+U8 = { value = 5121, docs = "Corresponds to `GL_UNSIGNED_BYTE`." }
+I16 = { value = 5122, docs = "Corresponds to `GL_SHORT`." }
+U16 = { value = 5123, docs = "Corresponds to `GL_UNSIGNED_SHORT`." }
+U32 = { value = 5125, docs = "Corresponds to `GL_UNSIGNED_INT`." }
+F32 = { value = 5126, docs = "Corresponds to `GL_FLOAT`." }
+
+
