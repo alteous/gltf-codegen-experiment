@@ -358,6 +358,11 @@ fn run() -> UnitResult {
     let _qpath = module.map_or_else(|| name.to_string(), |x| format!("{}::{}", x, name));
     let kind = meta["kind"].as_str().unwrap();
     let mut blocks = vec![];
+    if let Some(include) = meta.get("include") {
+        let path = include.as_str().unwrap();
+        let block = fs::read_to_string(&path)?;
+        blocks.push(block);
+    }
     match kind {
         "Struct" => {
             let mut block = String::new();
