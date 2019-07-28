@@ -211,6 +211,17 @@ fn write_struct(
                 let of = field["of"].as_str().unwrap();
                 writeln!(output, "  pub {}: Index<::{}>,", name, of)?;
             },
+            "Float" if optional => {
+                writeln!(output, "  pub {}: Option<f32>,", name)?;
+            },
+            "Float" => {
+                writeln!(output, "  pub {}: f32,", name)?;
+                if let Some(value) = default {
+                    let default_f32 = value.as_float().unwrap();
+                    writeln!(extra, "fn {}_default() -> f32 {{ {} }}", name, default_f32)?;
+                    writeln!(extra, "fn {}_is_default(x: f32) -> f32 {{ approx_eq!(x, {}) }}", name, default_f32)?;
+                }
+            },
             // Data types that don't support optional semantics:
             "Bool" => {
                 writeln!(output, "  pub {}: bool,", name)?;
@@ -287,6 +298,14 @@ fn write_struct_accessor(
             },
             "Integer" => {
                 writeln!(output, "  pub fn {}(&self) -> u32 {{", name)?;
+                writeln!(output, "    self.{}", name)?;
+            },
+            "Float" if optional => {
+                writeln!(output, "  pub fn {}(&self) -> Option<f32> {{", name)?;
+                writeln!(output, "    self.{}.clone()", name)?;
+            },
+            "Float" => {
+                writeln!(output, "  pub fn {}(&self) -> f32 {{", name)?;
                 writeln!(output, "    self.{}", name)?;
             },
             // Data types that don't support optional semantics:
