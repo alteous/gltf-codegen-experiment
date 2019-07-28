@@ -1,0 +1,13 @@
+[meta]
+kind = "Struct"
+ident = "Scene"
+module = "scene"
+docs = "The root nodes of a scene."
+
+[fields.nodes]
+ty = "Array"
+of =  { ty = "Index", of = "scene::Node" }
+json = "nodes"
+docs = "The indices of each root node."
+
+
