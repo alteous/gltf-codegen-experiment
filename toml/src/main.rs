@@ -170,47 +170,65 @@ fn write_struct(
     writeln!(output, "pub struct {} {{", name)?;
     for (name, field) in fields {
         let docs = field["docs"].as_str().unwrap();
-        writeln!(output, "  /// {}", docs)?;
         let ty = field["ty"].as_str().unwrap();
+        let optional = field.get("optional").map(|value| value.as_bool().unwrap()).unwrap_or(false);
+        let default = field.get("default");
+        if optional {
+            assert!(default.is_none());
+        }
+
+        writeln!(output, "  /// {}", docs)?;
+        if optional {
+            writeln!(output, "  #[serde(default, skip_serializing_if = \"Option::is_none\")]")?;
+        } else if default.is_some() {
+            writeln!(output, "  #[serde(default = \"{}_default\")]", name)?;
+            writeln!(output, "  #[serde(skip_serializing_if = \"{}_is_default\")]", name)?;
+        }
         match ty {
+            "String" if optional => {
+                writeln!(output, "  pub {}: Option<String>,", name)?;
+            },
             "String" => {
                 writeln!(output, "  pub {}: String,", name)?;
             },
+            "Integer" if optional => {
+                writeln!(output, "  pub {}: Option<u32>,", name)?;
+            },
             "Integer" => {
-                if let Some(default) = field["default"].as_str() {
-                    writeln!(output, "  #[serde(default = \"{}_default\")]", name)?;
-                    writeln!(output, "  #[serde(skip_serializing_if = \"{}_is_default\")]", name)?;
-                    writeln!(extra, "fn {}_default() -> u32 {{ {} }}", name, default)?;
-                    writeln!(extra, "fn {}_is_default(x: u32) -> u32 {{ x == {} }}", name, default)?;
-                }
                 writeln!(output, "  pub {}: u32,", name)?;
+                if let Some(value) = default {
+                    let default_u32 = value.as_integer().unwrap();
+                    writeln!(extra, "fn {}_default() -> u32 {{ {} }}", name, default_u32)?;
+                    writeln!(extra, "fn {}_is_default(x: u32) -> u32 {{ x == {} }}", name, default_u32)?;
+                }
             },
             "Bool" => {
-                if let Some(default) = field["default"].as_str() {
-                    writeln!(output, "  #[serde(default = \"{}_default\")]", name)?;
-                    writeln!(output, "  #[serde(skip_serializing_if = \"{}_is_default\")]", name)?;
-                    writeln!(extra, "fn {}_default() -> bool {{ {} }}", name, default)?;
-                    writeln!(extra, "fn {}_is_default(x: bool) -> bool {{ x == {} }}", name, default)?;
-                }
                 writeln!(output, "  pub {}: bool,", name)?;
+                if let Some(value) = default {
+                    let default_bool = value.as_bool().unwrap();
+                    writeln!(extra, "fn {}_default() -> bool {{ {} }}", name, default_bool)?;
+                    writeln!(extra, "fn {}_is_default(x: bool) -> bool {{ x == {} }}", name, default_bool)?;
+                }
+            },
+            "Index" if optional => {
+                let of = field["of"].as_str().unwrap();
+                writeln!(output, "  pub {}: Option<Index<::{}>>,", name, of)?;
             },
             "Index" => {
                 let of = field["of"].as_str().unwrap();
                 writeln!(output, "  pub {}: Index<::{}>,", name, of)?;
             },
-            "Option" => {
-                let of = field["of"].as_str().unwrap();
-                writeln!(output, "  #[serde(default, skip_serializing_if = \"Option::is_none\")]")?;
-                writeln!(output, "  pub {}: Option<::{}>,", name, of)?;
-            },
             "Enum" => {
                 let of = field["of"].as_str().unwrap();
                 writeln!(output, "  pub {}: Checked<::{}>,", name, of)?;
             },
-            _ => panic!("unknown type"),
+            "Any" => {
+                writeln!(output, "  pub {}: Option<::std::boxed::Box<::serde::value::RawValue>>,", name)?;
+            },
+            unknown => panic!("unknown type '{}'", unknown),
         }
     }
-    
+
     if extra.is_empty() {
         write!(output, "}}")?;
     } else {
@@ -238,22 +256,38 @@ fn write_struct_accessor(
     writeln!(output, "impl<'a> {}<'a> {{", name)?;
     for (name, field) in fields {
         let docs = field["docs"].as_str().unwrap();
+        let optional = field.get("optional").map(|value| value.as_bool().unwrap()).unwrap_or(false);
+
         writeln!(output, "  /// {}", docs)?;
         match field["ty"].as_str().unwrap() {
+            // Data types that support optional semantics:
+            "Index" if optional => {
+                let of = field["of"].as_str().unwrap();
+                writeln!(output, "  pub fn {}(&self) -> Option<::{}<'a>> {{", name, of)?;
+                writeln!(output, "    self.{}.as_ref().map(|index| self.document.get(index))", name)?;
+            },
             "Index" => {
                 let of = field["of"].as_str().unwrap();
                 writeln!(output, "  pub fn {}(&self) -> ::{}<'a> {{", name, of)?;
                 writeln!(output, "    self.document.get(&self.{})", name)?;
             },
-            "Option" => {
-                let of = field["of"].as_str().unwrap();
-                writeln!(output, "  pub fn {}(&self) -> Option<&'a ::{}> {{", name, of)?;
-                writeln!(output, "    self.{}.as_ref()", name)?;
+            "String" if optional => {
+                writeln!(output, "  pub fn {}(&self) -> Option<&'a str> {{", name)?;
+                writeln!(output, "    self.{}.as_ref().map(|string| string.as_str())", name)?;
             },
             "String" => {
                 writeln!(output, "  pub fn {}(&self) -> &'a str {{", name)?;
                 writeln!(output, "    self.{}.as_str()", name)?;
             },
+            "Integer" if optional => {
+                writeln!(output, "  pub fn {}(&self) -> Option<u32> {{", name)?;
+                writeln!(output, "    self.{}.clone()", name)?;
+            },
+            "Integer" => {
+                writeln!(output, "  pub fn {}(&self) -> u32 {{", name)?;
+                writeln!(output, "    self.{}", name)?;
+            },
+            // Data types that don't support optional semantics:
             "Bool" => {
                 writeln!(output, "  pub fn {}(&self) -> bool {{", name)?;
                 writeln!(output, "    self.{}", name)?;
@@ -263,11 +297,11 @@ fn write_struct_accessor(
                 writeln!(output, "  pub fn {}(&self) -> ::{} {{", name, of)?;
                 writeln!(output, "    self.{}.unwrap()", name)?;
             },
-            "Integer" => {
-                writeln!(output, "  pub fn {}(&self) -> u32 {{", name)?;
-                writeln!(output, "    self.{}", name)?;
+            "Any" => {
+                writeln!(output, "  pub fn {}(&self) -> Option<&::serde::value::RawValue> {{", name)?;
+                writeln!(output, "    self.{}.as_ref().map(|boxed| &*boxed)", name)?;
             },
-            _ => panic!("unknown type"),
+            unknown => panic!("unknown type '{}'", unknown),
         };
         writeln!(output, "  }}")?;
     }

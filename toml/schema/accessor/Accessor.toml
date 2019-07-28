@@ -14,7 +14,7 @@ docs = "The parent buffer view this accessor reads from."
 ty = "Integer"
 json = "byteOffset"
 docs = "The number of components within the buffer view."
-default = "0"
+default = 0
 
 [fields.data_type]
 ty = "Enum"
@@ -29,16 +29,16 @@ json = "type"
 docs = "Specifies if the attribute is a scalar, vector, or matrix."
 
 [fields.min]
-ty = "Option"
-of = "serde_json::value::RawValue"
+ty = "Any"
 docs = "Minimum value of each component in this attribute."
+optional = true
 
 [fields.max]
-ty = "Option"
-of = "serde_json::value::RawValue"
+ty = "Any"
 docs = "Maximum value of each component in this attribute."
+optional = true
 
 [fields.normalized]
 ty = "Bool"
 docs = "Specifies whether integer data values should be normalized."
-default = "false"
+default = false
