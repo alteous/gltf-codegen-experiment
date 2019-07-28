@@ -231,6 +231,24 @@ fn write_struct(
                     writeln!(extra, "fn {}_is_default(x: f32) -> f32 {{ approx_eq!(x, {}) }}", name, default_f32)?;
                 }
             },
+            "FixedSizeArray" if optional => {
+                let of = field["of"]["ty"].as_str().unwrap();
+                let n = field["of"]["n"].as_integer().unwrap();
+                match of {
+                    "Float" => writeln!(output, "  pub {}: Option<[f32; {}]>,", name, n)?,
+                    "Integer" => writeln!(output, "  pub {}: Option<[u32; {}]>,", name, n)?,
+                    _ => panic!("can't handle fixed size array of type '{}'", of),
+                }
+            },
+            "FixedSizeArray" => {
+                let of = field["of"]["ty"].as_str().unwrap();
+                let n = field["of"]["n"].as_integer().unwrap();
+                match of {
+                    "Float" => writeln!(output, "  pub {}: [f32; {}],", name, n)?,
+                    "Integer" => writeln!(output, "  pub {}: [u32; {}],", name, n)?,
+                    _ => panic!("can't handle fixed size array of type '{}'", of),
+                }
+            },
             // Data types that don't support optional semantics:
             "Array" if field["of"].is_str() => {
                 let of = field["of"].as_str().unwrap();
@@ -404,6 +422,36 @@ fn write_struct_accessor(
             "Float" => {
                 writeln!(output, "  pub fn {}(&self) -> f32 {{", name)?;
                 writeln!(output, "    self.{}", name)?;
+            },
+            "FixedSizeArray" if optional => {
+                let of = field["of"]["ty"].as_str().unwrap();
+                let n = field["of"]["n"].as_integer().unwrap();
+                match of {
+                    "Float" => {
+                        writeln!(output, "  pub fn {}(&self) -> Option<[f32; {}]> {{", name, n)?;
+                        writeln!(output, "    self.{}.clone()", name)?;
+                    }
+                    "Integer" => {
+                        writeln!(output, "  pub fn {}(&self) -> Option<[u32; {}]> {{", name, n)?;
+                        writeln!(output, "    self.{}.clone()", name)?;
+                    }
+                    _ => panic!("can't handle fixed size array of type '{}'", of),
+                }
+            },
+            "FixedSizeArray" => {
+                let of = field["of"]["ty"].as_str().unwrap();
+                let n = field["of"]["n"].as_integer().unwrap();
+                match of {
+                    "Float" => {
+                        writeln!(output, "  pub fn {}(&self) -> [f32; {}] {{", name, n)?;
+                        writeln!(output, "    self.{}.clone()", name)?;
+                    }
+                    "Integer" => {
+                        writeln!(output, "  pub fn {}(&self) -> [u32; {}] {{", name, n)?;
+                        writeln!(output, "    self.{}.clone()", name)?;
+                    }
+                    _ => panic!("can't handle fixed size array of type '{}'", of),
+                }
             },
             // Data types that don't support optional semantics:
             "Bool" => {
