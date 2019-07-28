@@ -278,6 +278,11 @@ fn write_struct_accessor(
     for (name, field) in fields {
         let docs = field["docs"].as_str().unwrap();
         let optional = field.get("optional").map(|value| value.as_bool().unwrap()).unwrap_or(false);
+        let hidden = field.get("hidden").map(|value| value.as_bool().unwrap()).unwrap_or(false);
+        if hidden {
+            // Don't expose this field in the wrapper.
+            continue;
+        }
 
         writeln!(output, "  /// {}", docs)?;
         match field["ty"].as_str().unwrap() {
