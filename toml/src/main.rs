@@ -185,6 +185,7 @@ fn write_struct(
             writeln!(output, "  #[serde(skip_serializing_if = \"{}_is_default\")]", name)?;
         }
         match ty {
+            // Data types that support optional semantics:
             "String" if optional => {
                 writeln!(output, "  pub {}: Option<String>,", name)?;
             },
@@ -202,14 +203,6 @@ fn write_struct(
                     writeln!(extra, "fn {}_is_default(x: u32) -> u32 {{ x == {} }}", name, default_u32)?;
                 }
             },
-            "Bool" => {
-                writeln!(output, "  pub {}: bool,", name)?;
-                if let Some(value) = default {
-                    let default_bool = value.as_bool().unwrap();
-                    writeln!(extra, "fn {}_default() -> bool {{ {} }}", name, default_bool)?;
-                    writeln!(extra, "fn {}_is_default(x: bool) -> bool {{ x == {} }}", name, default_bool)?;
-                }
-            },
             "Index" if optional => {
                 let of = field["of"].as_str().unwrap();
                 writeln!(output, "  pub {}: Option<Index<::{}>>,", name, of)?;
@@ -217,6 +210,15 @@ fn write_struct(
             "Index" => {
                 let of = field["of"].as_str().unwrap();
                 writeln!(output, "  pub {}: Index<::{}>,", name, of)?;
+            },
+            // Data types that don't support optional semantics:
+            "Bool" => {
+                writeln!(output, "  pub {}: bool,", name)?;
+                if let Some(value) = default {
+                    let default_bool = value.as_bool().unwrap();
+                    writeln!(extra, "fn {}_default() -> bool {{ {} }}", name, default_bool)?;
+                    writeln!(extra, "fn {}_is_default(x: bool) -> bool {{ x == {} }}", name, default_bool)?;
+                }
             },
             "Enum" => {
                 let of = field["of"].as_str().unwrap();
