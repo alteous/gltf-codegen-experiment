@@ -232,7 +232,7 @@ fn write_struct(
                 }
             },
             // Data types that don't support optional semantics:
-            "Array" => {
+            "Array" if field["of"].is_str() => {
                 let of = field["of"].as_str().unwrap();
                 let iter = name.to_pascal_case();
 
@@ -266,6 +266,29 @@ fn write_struct(
                         writeln!(extra, "}}")?;
                     },
                 }
+            },
+            "Array" if field["of"].is_table() => {
+                assert_eq!("Index", field["of"]["ty"].as_str().unwrap());
+                let of = field["of"]["of"].as_str().unwrap();
+                let iter = name.to_pascal_case();
+                writeln!(output, "  #[serde(default, skip_serializing_if = \"Vec::is_empty\")]")?;
+                writeln!(output, "  pub {}: Vec<Index<::{}>>,", name, of)?;
+                writeln!(extra, "#[derive(Clone, Debug)]")?;
+                writeln!(extra, "pub struct {}<'a> {{", iter)?;
+                writeln!(extra, "  pub(crate) iter: ::std::slice::Iter<'a, Index<::{}>>,", of)?;
+                writeln!(extra, "  pub(crate) document: &'a ::Document,")?;
+                writeln!(extra, "}}")?;
+                writeln!(extra, "")?;
+                writeln!(extra, "impl<'a> ExactSizeIterator for {}<'a> {{}}", iter)?;
+                writeln!(extra, "impl<'a> Iterator for {}<'a> {{", iter)?;
+                writeln!(extra, "  type Item = ::{}<'a>;", of)?;
+                writeln!(extra, "  fn next(&mut self) -> Option<Self::Item> {{")?;
+                writeln!(extra, "    self.iter.next().map(|index| self.document.get(index))")?;
+                writeln!(extra, "  }}")?;
+                writeln!(extra, "  fn size_hint(&self) -> (usize, Option<usize>) {{")?;
+                writeln!(extra, "    self.iter.size_hint()")?;
+                writeln!(extra, "  }}")?;
+                writeln!(extra, "}}")?;
             },
             "Bool" => {
                 writeln!(output, "  pub {}: bool,", name)?;
@@ -343,14 +366,20 @@ fn write_struct_accessor(
                 writeln!(output, "  pub fn {}(&self) -> ::{}<'a> {{", name, of)?;
                 writeln!(output, "    ::{}::new(self.document, &self.{})", of, name)?;
             },
-            "Array" => {
+            "Array" if field["of"].is_str() => {
                 let of = field["of"].as_str().unwrap();
                 let iter = name.to_pascal_case();
                 writeln!(output, "  pub fn {}(&self) -> {}<'a> {{", name, iter)?;
                 match of {
                     "Float" | "Integer" => writeln!(output, "    self.{}.iter()", name)?,
-                     _ => writeln!(output, "    {}::new(self.document, self.{}.iter().enumerate())", iter, name)?,
+                     _ => writeln!(output, "    {} {{ document: self.document, iter: self.{}.iter().enumerate() }}", iter, name)?,
                 }
+            },
+            "Array" if field["of"].is_table() => {
+                assert_eq!("Index", field["of"]["ty"].as_str().unwrap());
+                let iter = name.to_pascal_case();
+                writeln!(output, "  pub fn {}(&self) -> {}<'a> {{", name, iter)?;
+                writeln!(output, "    {} {{ document: self.document, iter: self.{}.iter() }}", iter, name)?;
             },
             "String" if optional => {
                 writeln!(output, "  pub fn {}(&self) -> Option<&'a str> {{", name)?;
