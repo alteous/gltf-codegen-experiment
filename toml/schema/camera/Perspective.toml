@@ -1,0 +1,28 @@
+[meta]
+kind = "Struct"
+ident = "Perspective"
+module = "camera"
+docs = "A perspective projection."
+
+[fields.aspect_ratio]
+ty = "Float"
+docs = "The floating-point horizontal magnification of the view."
+optional = true
+json = "aspectRatio"
+
+[fields.yfov]
+ty = "Float"
+docs = "The vertical field of view in radians."
+json = "yfov"
+
+[fields.zfar]
+ty = "Float"
+docs = "The distance to the far clipping plane where `zfar > znear`."
+optional = true
+notes = "When `None`, assume an infinite projection."
+json = "zfar"
+
+[fields.znear]
+ty = "Float"
+docs = "The distance to the near clipping plane where `znear < zfar`."
+json = "znear"

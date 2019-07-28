@@ -1,0 +1,15 @@
+[meta]
+kind = "Enum"
+of = "String"
+ident = "Kind"
+module = "camera"
+docs = "Specifies if the camera uses a perspective or orthographic projection."
+
+[values.Orthographic]
+value = "orthographic"
+docs = "An orthographic projection."
+
+[values.Perspective]
+value = "perspective"
+docs = "A perspective projection."
+

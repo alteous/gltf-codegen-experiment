@@ -1,0 +1,26 @@
+[meta]
+kind = "Struct"
+ident = "Orthographic"
+module = "camera"
+docs = "An orthographic projection."
+
+[fields.xmag]
+ty = "Float"
+docs = "The horizontal magnification of the view."
+json = "xmag"
+
+[fields.ymag]
+ty = "Float"
+docs = "The vertical magnification of the view."
+json = "ymag"
+
+[fields.zfar]
+ty = "Float"
+docs = "The distance to the far clipping plane where `zfar > znear`."
+json = "zfar"
+
+[fields.znear]
+ty = "Float"
+docs = "The distance to the near clipping plane where `znear < zfar`."
+json = "znear"
+

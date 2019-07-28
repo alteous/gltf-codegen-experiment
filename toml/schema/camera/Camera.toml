@@ -1,0 +1,28 @@
+[meta]
+kind = "Struct"
+ident = "Camera"
+module = "camera"
+docs = "A camera in the scene."
+
+[fields.kind]
+ty = "Enum"
+of = "camera::Kind"
+json = "type"
+docs = "The camera's projection."
+
+[fields.orthographic]
+ty = "Struct"
+of = "camera::Orthographic"
+optional = true
+json = "orthographic"
+docs = "Properties of an orthographic projection."
+
+[fields.perspective]
+ty = "Struct"
+of = "camera::Perspective"
+optional = true
+json = "perspective"
+docs = "Properties of a perspective projection."
+
+
+
