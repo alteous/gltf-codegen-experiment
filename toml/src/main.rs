@@ -1,3 +1,4 @@
+use inflections::Inflect;
 use std::{env, fmt, fs, io};
 use std::fmt::Write;
 
@@ -231,6 +232,41 @@ fn write_struct(
                 }
             },
             // Data types that don't support optional semantics:
+            "Array" => {
+                let of = field["of"].as_str().unwrap();
+                let iter = name.to_pascal_case();
+
+                writeln!(output, "  #[serde(default, skip_serializing_if = \"Vec::is_empty\")]")?;
+                match of {
+                    "Float" => {
+                        writeln!(output, "  pub {}: Vec<f32>,", name)?;
+                        writeln!(extra, "pub type {} = ::std::slice::Iter<'a, f32>;", iter)?;
+                    },
+                    "Integer" => {
+                        writeln!(output, "  pub {}: Vec<u32>,", name)?;
+                        writeln!(extra, "pub type {} = ::std::slice::Iter<'a, u32>;", iter)?;
+                    },
+                    _ => {
+                        writeln!(output, "  pub {}: Vec<::{}>,", name, of)?;
+                        writeln!(extra, "#[derive(Clone, Debug)]")?;
+                        writeln!(extra, "pub struct {}<'a> {{", iter)?;
+                        writeln!(extra, "  pub(crate) iter: ::std::iter::Enumerate<::std::slice::Iter<'a, ::{}>>,", of)?;
+                        writeln!(extra, "  pub(crate) document: &'a ::Document,")?;
+                        writeln!(extra, "}}")?;
+                        writeln!(extra, "")?;
+                        writeln!(extra, "impl<'a> ExactSizeIterator for {}<'a> {{}}", iter)?;
+                        writeln!(extra, "impl<'a> Iterator for {}<'a> {{", iter)?;
+                        writeln!(extra, "  type Item = ::{}<'a>;", of)?;
+                        writeln!(extra, "  fn next(&mut self) -> Option<Self::Item> {{")?;
+                        writeln!(extra, "    self.iter.next().map(|(index, json)| ::{}::new(self.document, index, json))", of)?;
+                        writeln!(extra, "  }}")?;
+                        writeln!(extra, "  fn size_hint(&self) -> (usize, Option<usize>) {{")?;
+                        writeln!(extra, "    self.iter.size_hint()")?;
+                        writeln!(extra, "  }}")?;
+                        writeln!(extra, "}}")?;
+                    },
+                }
+            },
             "Bool" => {
                 writeln!(output, "  pub {}: bool,", name)?;
                 if let Some(value) = default {
@@ -306,6 +342,15 @@ fn write_struct_accessor(
                 let of = field["of"].as_str().unwrap();
                 writeln!(output, "  pub fn {}(&self) -> ::{}<'a> {{", name, of)?;
                 writeln!(output, "    ::{}::new(self.document, &self.{})", of, name)?;
+            },
+            "Array" => {
+                let of = field["of"].as_str().unwrap();
+                let iter = name.to_pascal_case();
+                writeln!(output, "  pub fn {}(&self) -> {}<'a> {{", name, iter)?;
+                match of {
+                    "Float" | "Integer" => writeln!(output, "    self.{}.iter()", name)?,
+                     _ => writeln!(output, "    {}::new(self.document, self.{}.iter().enumerate())", iter, name)?,
+                }
             },
             "String" if optional => {
                 writeln!(output, "  pub fn {}(&self) -> Option<&'a str> {{", name)?;

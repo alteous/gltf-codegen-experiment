@@ -5,4 +5,5 @@ authors = ["David Harvey-Macaulay <david@harvey-macaulay.com>"]
 edition = "2018"
 
 [dependencies]
+inflections = "1.1"
 toml = "0.5"
