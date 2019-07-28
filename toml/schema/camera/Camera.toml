@@ -3,6 +3,7 @@ kind = "Struct"
 ident = "Camera"
 module = "camera"
 docs = "A camera in the scene."
+include = "support/camera.rs"
 
 [fields.kind]
 ty = "Enum"
@@ -14,6 +15,7 @@ docs = "The camera's projection."
 ty = "Struct"
 of = "camera::Orthographic"
 optional = true
+hidden = true
 json = "orthographic"
 docs = "Properties of an orthographic projection."
 
@@ -21,8 +23,7 @@ docs = "Properties of an orthographic projection."
 ty = "Struct"
 of = "camera::Perspective"
 optional = true
+hidden = true
 json = "perspective"
 docs = "Properties of a perspective projection."
-
-
 
