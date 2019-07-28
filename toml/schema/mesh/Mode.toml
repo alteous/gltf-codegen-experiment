@@ -1,0 +1,17 @@
+[meta]
+kind = "Enum"
+of = "Integer"
+ident = "Mode"
+module = "mesh"
+docs = "Specifies the type of primitives to render."
+
+[values]
+Points = { value = 0, docs = "Corresponds to `GL_POINTS`." }
+Lines = { value = 1, docs = "Corresponds to `GL_LINES`." }
+LineLoop = { value = 2, docs = "Corresponds to `GL_LINE_LOOP`." }
+LineStrip = { value = 3, docs = "Corresponds to `GL_LINE_STRIP`." }
+Triangles = { value = 4, docs = "Corresponds to `GL_TRIANGLES`." }
+TriangleStrip = { value = 5, docs = "Corresponds to `GL_TRIANGLE_STRIP`." }
+TriangleFan = { value = 6, docs = "Corresponds to `GL_TRIANGLE_FAN`." }
+
+

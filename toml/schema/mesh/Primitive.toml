@@ -1,0 +1,35 @@
+[meta]
+kind = "Struct"
+ident = "Primitive"
+module = "mesh"
+docs = "Geometry to be rendered with the given material."
+
+[fields.attributes]
+ty = "Any"
+json = "attributes"
+docs = "Semantic to accessor mapping."
+
+[fields.indices]
+ty = "Index"
+of = "accessor::Accessor"
+json = "indices"
+docs = "Accessor that contains the indices."
+optional = true
+
+[fields.material]
+ty = "Index"
+of = "material::Material"
+json = "material"
+docs = "The material to apply when rendering this primitive."
+optional = true
+
+[fields.mode]
+ty = "Enum"
+of = "mesh::Mode"
+json = "mode"
+docs = "The type of primitives to render."
+
+[fields.targets]
+ty = "Any"
+json = "targets"
+docs = "An array of morph targets."
