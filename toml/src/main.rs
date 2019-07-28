@@ -211,6 +211,14 @@ fn write_struct(
                 let of = field["of"].as_str().unwrap();
                 writeln!(output, "  pub {}: Index<::{}>,", name, of)?;
             },
+            "Struct" if optional => {
+                let of = field["of"].as_str().unwrap();
+                writeln!(output, "  pub {}: Option<::{}>,", name, of)?;
+            },
+            "Struct" => {
+                let of = field["of"].as_str().unwrap();
+                writeln!(output, "  pub {}: ::{},", name, of)?;
+            },
             "Float" if optional => {
                 writeln!(output, "  pub {}: Option<f32>,", name)?;
             },
@@ -283,6 +291,16 @@ fn write_struct_accessor(
                 let of = field["of"].as_str().unwrap();
                 writeln!(output, "  pub fn {}(&self) -> ::{}<'a> {{", name, of)?;
                 writeln!(output, "    self.document.get(&self.{})", name)?;
+            },
+            "Struct" if optional => {
+                let of = field["of"].as_str().unwrap();
+                writeln!(output, "  pub fn {}(&self) -> Option<::{}<'a>> {{", name, of)?;
+                writeln!(output, "    self.{}.as_ref().map(|json| ::{}::new(self.document, json))", name, of)?;
+            },
+            "Struct" => {
+                let of = field["of"].as_str().unwrap();
+                writeln!(output, "  pub fn {}(&self) -> ::{}<'a> {{", name, of)?;
+                writeln!(output, "    ::{}::new(self.document, &self.{})", of, name)?;
             },
             "String" if optional => {
                 writeln!(output, "  pub fn {}(&self) -> Option<&'a str> {{", name)?;
