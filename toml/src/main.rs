@@ -169,6 +169,23 @@ fn write_struct(
     writeln!(output, "/// {}", docs)?;
     writeln!(output, "#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]")?;
     writeln!(output, "pub struct {} {{", name)?;
+
+    // Boilerplate entries.
+    writeln!(output, "  /// Optional user-defined name for this object.")?;
+    writeln!(output, "  #[cfg(feature = \"names\")]")?;
+    writeln!(output, "  #[cfg_attr(feature = \"names\", serde(default, skip_serializing_if = \"Option::is_none\"))]")?;
+    writeln!(output, "  pub name: Option<String>,")?;
+
+    writeln!(output, "  /// Optional application specific data.")?;
+    writeln!(output, "  #[cfg(feature = \"extras\")]")?;
+    writeln!(output, "  #[cfg_attr(feature = \"extras\", serde(default, skip_serializing_if = \"Option::is_none\"))]")?;
+    writeln!(output, "  pub extras: Option<::std::boxed::Box<::serde::value::RawValue>>,")?;
+
+    writeln!(output, "  /// Extension specific data.")?;
+    writeln!(output, "  #[serde(default, skip_serializing_if = \"Option::is_none\")]")?;
+    writeln!(output, "  pub extensions: Option<::std::boxed::Box<::serde::value::RawValue>>,")?;
+
+    // Distinguishing entries.
     for (name, field) in fields {
         let docs = field["docs"].as_str().unwrap();
         let ty = field["ty"].as_str().unwrap();
@@ -352,6 +369,26 @@ fn write_struct_accessor(
     writeln!(output, "}}")?;
     writeln!(output, "")?;
     writeln!(output, "impl<'a> {}<'a> {{", name)?;
+
+    // Boilerplate entries.
+    writeln!(output, "  /// Optional user-defined name for this object.")?;
+    writeln!(output, "  #[cfg(feature = \"names\")]")?;
+    writeln!(output, "  pub fn name(&self) -> Option<&str> {{")?;
+    writeln!(output, "    self.json.name.as_ref().map(|name| name.as_str())")?;
+    writeln!(output, "  }}")?;
+
+    writeln!(output, "  /// Optional application specific data.")?;
+    writeln!(output, "  #[cfg(feature = \"extras\")]")?;
+    writeln!(output, "  pub fn extras(&self) -> Option<&::serde::value::RawValue> {{")?;
+    writeln!(output, "    self.json.extensions.map(|boxed| &*boxed)")?;
+    writeln!(output, "  }}")?;
+
+    writeln!(output, "  /// Extension specific data.")?;
+    writeln!(output, "  pub fn extensions(&self) -> Option<&::serde::value::RawValue> {{")?;
+    writeln!(output, "    self.json.extensions.map(|boxed| &*boxed)")?;
+    writeln!(output, "  }}")?;
+
+    // Distinguishing entries.
     for (name, field) in fields {
         let docs = field["docs"].as_str().unwrap();
         let optional = field.get("optional").map(|value| value.as_bool().unwrap()).unwrap_or(false);
