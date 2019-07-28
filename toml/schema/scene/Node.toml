@@ -1,0 +1,67 @@
+[meta]
+kind = "Struct"
+ident = "Node"
+module = "scene"
+docs = "A node in the scene hierarchy."
+
+[fields.camera]
+ty = "Index"
+of = "camera::Camera"
+json = "camera"
+docs = "The index of the camera referenced by this node."
+optional = true
+
+[fields.children]
+ty = "Array"
+of = { ty = "Index", of = "scene::Node" }
+json = "children"
+docs = "This node's child nodes."
+
+[fields.matrix]
+ty = "FixedSizeArray"
+of = { ty = "Float", n = 16 }
+optional = true
+json = "matrix"
+docs = "4x4 column-major transformation matrix."
+
+[fields.mesh]
+ty = "Index"
+of = "mesh::Mesh"
+optional = true
+json = "mesh"
+docs = "The index of the mesh in this node."
+
+[fields.rotation]
+ty = "FixedSizeArray"
+of = { ty = "Float", n = 4 }
+optional = true
+json = "rotation"
+docs = "Unit quaternion rotation `[x, y, z, w]` where `w` is the scalar."
+
+[fields.scale]
+ty = "FixedSizeArray"
+of = { ty = "Float", n = 3 }
+optional = true
+json = "scale"
+docs = "Non-uniform scale factor."
+
+[fields.translation]
+ty = "FixedSizeArray"
+of = { ty = "Float", n = 3 }
+optional = true
+json = "translation"
+docs = "Node translation."
+
+[fields.skin]
+ty = "Index"
+of = "skin::Skin"
+optional = true
+json = "skin"
+docs = "Skinning properties for this node."
+
+[fields.weights]
+ty = "Array"
+of = "Float"
+json = "weights"
+docs = "Weights of the instantiated morph target."
+
