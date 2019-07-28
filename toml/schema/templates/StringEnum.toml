@@ -1,0 +1,11 @@
+[meta]
+kind = "Enum"
+of = "String"
+ident = # Enum identifier, e.g. "Dimensions".
+module = # Module identifier, e.g. "accessor".
+docs = # Documentation for enum declaration.
+
+[values.#value_name]
+value = # Corresponding string value, e.g. "SCALAR".
+docs = # Documentation for variant declaration.
+

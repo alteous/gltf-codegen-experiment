@@ -1,0 +1,11 @@
+[meta]
+kind = "Enum"
+of = "Integer"
+ident = # Enum identifier, e.g. "DataType".
+module = # Module identifier, e.g. "accessor".
+docs = # Documentation for enum declaration.
+
+[values.#value_name]
+value = # Corresponding integer value, e.g. 1234.
+docs = # Documentation for variant declaration.
+

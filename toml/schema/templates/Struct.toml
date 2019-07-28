@@ -1,0 +1,14 @@
+[meta]
+kind = "Struct"
+ident = # Struct identifier, e.g. "Accessor".
+module = # Module identifier, e.g. "accessor".
+docs = # Documentation for struct declaration.
+
+[fields.#field_name]
+ty = # One of: "Struct", "Enum", "Index", "Integer", "Bool", "Any", "String"
+of = # Sub-type for 'Struct', 'Enum', and 'Index' types. Omit for all other types.
+json = # Name of field in JSON data.
+docs = # Documentation for field declaration.
+optional = # Set to true if not required in JSON. Not valid for 'Enum', 'Bool', and 'Any' types.
+default = # Set to a value of an appropriate type if not required in JSON. Not valid with optional.
+
