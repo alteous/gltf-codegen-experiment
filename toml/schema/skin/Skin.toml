@@ -1,0 +1,22 @@
+[meta]
+kind = "Struct"
+ident = "Skin"
+module = "skin"
+docs = "Joints and matrices defining a skin."
+
+[fields.inverse_bind_matrices]
+ty = "Index"
+of = "accessor::Accessor"
+json = "inverseBindMatrices"
+docs = "The accessor containing the 4x4 inverse bind matrices."
+notes = "When `None`, each matrix is assumed to be the 4x4 identity matrix."
+optional = true
+
+[fields.skeleton]
+ty = "Index"
+of = "scene::Node"
+json = "skeleton"
+docs = "The skeleton root node."
+notes = "When `None`, joint transforms resolve to the scene root."
+optional = true
+
