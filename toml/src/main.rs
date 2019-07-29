@@ -348,6 +348,11 @@ fn write_struct(
                 assert!(!optional);
                 writeln!(output, "  pub {}: Option<::std::boxed::Box<::serde::value::RawValue>>,", name)?;
             },
+            "Special" => {
+                assert!(!optional);
+                let of = field["of"].as_str().unwrap();
+                writeln!(output, "  pub {}: {},", name, of)?;
+            },
             unknown => panic!("unknown type '{}'", unknown),
         }
     }
@@ -399,15 +404,16 @@ fn write_struct_accessor(
     // Distinguishing entries.
     for (name, field) in fields {
         let docs = field["docs"].as_str().unwrap();
+        let ty = field["ty"].as_str().unwrap();
         let optional = field.get("optional").map(|value| value.as_bool().unwrap()).unwrap_or(false);
         let hidden = field.get("hidden").map(|value| value.as_bool().unwrap()).unwrap_or(false);
-        if hidden {
+        if hidden || ty == "Special" {
             // Don't expose this field in the wrapper.
             continue;
         }
 
         writeln!(output, "  /// {}", docs)?;
-        match field["ty"].as_str().unwrap() {
+        match ty {
             // Data types that support optional semantics:
             "Index" if optional => {
                 let of = field["of"].as_str().unwrap();
