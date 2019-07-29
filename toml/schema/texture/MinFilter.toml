@@ -1,0 +1,15 @@
+[meta]
+kind = "Enum"
+of = "Integer"
+ident = "MinFilter"
+module = "texture"
+docs = "Minification filter."
+
+[values]
+Nearest = { value = 9728, docs = "Corresponds to `GL_NEAREST`." }
+Linear = { value = 9729, docs = "Corresponds to `GL_LINEAR`." }
+NearestMipmapNearest = { value = 9984, docs = "Corresponds to `GL_NEAREST_MIPMAP_NEAREST`." }
+LinearMipmapNearest = { value = 9985, docs = "Corresponds to `GL_LINEAR_MIPMAP_NEAREST`." }
+NearestMipmapLinear = { value = 9986, docs = "Corresponds to `GL_NEAREST_MIPMAP_LINEAR`." }
+LinearMipmapLinear = { value = 9987, docs = "Corresponds to `GL_LINEAR_MIPMAP_LINEAR`." }
+

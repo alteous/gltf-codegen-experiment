@@ -1,0 +1,12 @@
+[meta]
+kind = "Enum"
+of = "Integer"
+ident = "WrappingMode"
+module = "texture"
+docs = "Texture co-ordinate wrapping mode."
+
+[values]
+ClampToEdge = { value = 33071, docs = "Corresponds to `GL_CLAMP_TO_EDGE`."  }
+MirroredRepeat = { value = 33648, docs = "Corresponds to `GL_MIRRORED_REPEAT`." }
+Repeat = { value = 10497, docs = "Corresponds to `GL_REPEAT`." }
+

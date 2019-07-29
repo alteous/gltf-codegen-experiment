@@ -1,0 +1,10 @@
+[meta]
+kind = "Enum"
+of = "Integer"
+ident = "MagFilter"
+module = "texture"
+docs = "Magnification filter."
+
+[values]
+Nearest = { value = 9728, docs = "Corresponds to `GL_NEAREST`." }
+Linear = { value = 9729, docs = "Corresponds to `GL_LINEAR`." }

@@ -1,0 +1,19 @@
+[meta]
+kind = "Struct"
+ident = "Info"
+module = "texture"
+docs = "Reference to a `Texture`."
+
+[fields.index]
+ty = "Index"
+of = "texture::Texture"
+json = "index"
+docs = "The referenced texture."
+
+[fields.tex_coord]
+ty = "Index"
+of = "Integer"
+json = "texCoord"
+docs = "The set index of the texture's `TEXCOORD` attribute."
+default = 0
+

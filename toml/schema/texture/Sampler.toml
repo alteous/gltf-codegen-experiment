@@ -1,0 +1,31 @@
+[meta]
+kind = "Struct"
+ident = "Sampler"
+module = "texture"
+docs = "Texture sampling properties for filtering and wrapping modes."
+
+[fields.mag_filter]
+ty = "Enum"
+of = "texture::MagFilter"
+json = "magFilter"
+docs = "Magnification filter."
+optional = true
+
+[fields.min_filter]
+ty = "Enum"
+of = "texture::MinFilter"
+json = "minFilter"
+docs = "Minification filter."
+optional = true
+
+[fields.wrap_s]
+ty = "Enum"
+of = "texture::WrappingMode"
+json = "wrapS"
+docs = "Wrapping mode for the `s` axis in texture space."
+
+[fields.wrap_t]
+ty = "Enum"
+of = "texture::WrappingMode"
+json = "wrapT"
+docs = "Wrapping mode for the `t` axis in texture space."

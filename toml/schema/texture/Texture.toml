@@ -1,0 +1,20 @@
+[meta]
+kind = "Struct"
+ident = "Texture"
+module = "texture"
+docs = "A texture and its sampler."
+
+[fields.sampler]
+ty = "Index"
+of = "texture::Sampler"
+json = "sampler"
+docs = "The sampler used by this texture."
+optional = true
+
+[fields.source]
+ty = "Index"
+of = "image::Image"
+json = "source"
+docs = "The image used by this texture."
+optional = true
+
