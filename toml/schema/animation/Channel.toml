@@ -1,0 +1,18 @@
+[meta]
+kind = "Struct"
+ident = "Channel"
+module = "animation"
+docs = "Targets an animation's sampler at a node's property."
+
+[fields.sampler]
+ty = "Index"
+of = "animation::Sampler"
+json = "sampler"
+docs = "The sampler in this animation used to compute the value of the target."
+
+[fields.target]
+ty = "Struct"
+of = "animation::Target"
+json = "target"
+docs = "The index of the node and TRS property to target."
+

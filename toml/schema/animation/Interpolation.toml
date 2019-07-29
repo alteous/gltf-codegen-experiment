@@ -1,0 +1,12 @@
+[meta]
+kind = "Enum"
+of = "String"
+ident = "Interpolation"
+module = "animation"
+docs = "Specifies an interpolation algorithm."
+
+[values]
+Linear = { value = "LINEAR", docs = "Linear interpolation." }
+Step = { value = "STEP", docs = "Step interpolation." }
+CatmullRomSpline = { value = "CATMULLROMSPLINE", docs = "Uniform Catmull-Rom spline interpolation." }
+CubicSpline = { value = "CUBICSPLINE", docs = "Cubic spline interpolation." }

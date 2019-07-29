@@ -1,0 +1,19 @@
+[meta]
+kind = "Struct"
+ident = "Animation"
+module = "animation"
+docs = "A keyframe animation."
+
+[fields.channels]
+ty = "Array"
+of = "animation::Channel"
+json = "channels"
+docs = "Each channel targets an animation's sampler at a node's property."
+
+[fields.samplers]
+ty = "Array"
+of = "animation::Sampler"
+json = "samplers"
+docs = "Samplers combine input and output accessors with an interpolation algorithm."
+notes = "A sampler defines a keyframe graph but not its target."
+

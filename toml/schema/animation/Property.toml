@@ -1,0 +1,13 @@
+[meta]
+kind = "Enum"
+of = "String"
+ident = "Property"
+module = "animation"
+docs = "Specifies a property to animate."
+
+[values]
+Translation = { value = "translation", docs = "XYZ translation vector." }
+Rotation = { value = "rotation", docs = "XYZW rotation quaternion." }
+Scale = { value = "scale", docs = "XYZ scale vector." }
+Weights = { value = "weights", docs = "Weights of morph targets." }
+

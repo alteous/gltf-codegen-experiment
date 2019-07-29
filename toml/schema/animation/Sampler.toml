@@ -1,0 +1,24 @@
+[meta]
+kind = "Struct"
+ident = "Sampler"
+module = "animation"
+docs = "Defines a generic keyframe graph."
+
+[fields.input]
+ty = "Index"
+of = "accessor::Accessor"
+json = "input"
+docs = "The accessor containing keyframe input values, e.g., time."
+
+[fields.interpolation]
+ty = "Enum"
+of = "animation::Interpolation"
+json = "interpolation"
+docs = "The interpolation algorithm."
+
+[fields.output]
+ty = "Index"
+of = "accessor::Accessor"
+json = "output"
+docs = "The accessor containing keyframe output values."
+

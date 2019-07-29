@@ -1,0 +1,18 @@
+[meta]
+kind = "Struct"
+ident = "Target"
+module = "animation"
+docs = "The node and TRS property that an animation channel targets."
+
+[fields.node]
+ty = "Index"
+of = "scene::Node"
+json = "node"
+docs = "The animation target node."
+
+[fields.property]
+ty = "Enum"
+of = "animation::Property"
+json = "path"
+docs = "The target property to modify or the weights of the morph target it instantiates."
+
