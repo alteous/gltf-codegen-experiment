@@ -266,8 +266,17 @@ fn write_struct(
                     _ => panic!("can't handle fixed size array of type '{}'", of),
                 }
             },
+            "Enum" if optional => {
+                let of = field["of"].as_str().unwrap();
+                writeln!(output, "  pub {}: Option<Checked<::{}>>,", name, of)?;
+            },
+            "Enum" => {
+                let of = field["of"].as_str().unwrap();
+                writeln!(output, "  pub {}: Checked<::{}>,", name, of)?;
+            },
             // Data types that don't support optional semantics:
             "Array" if field["of"].is_str() => {
+                assert!(!optional);
                 let of = field["of"].as_str().unwrap();
                 let iter = name.to_pascal_case();
 
@@ -303,6 +312,7 @@ fn write_struct(
                 }
             },
             "Array" if field["of"].is_table() => {
+                assert!(!optional);
                 assert_eq!("Index", field["of"]["ty"].as_str().unwrap());
                 let of = field["of"]["of"].as_str().unwrap();
                 let iter = name.to_pascal_case();
@@ -326,6 +336,7 @@ fn write_struct(
                 writeln!(extra, "}}")?;
             },
             "Bool" => {
+                assert!(!optional);
                 writeln!(output, "  pub {}: bool,", name)?;
                 if let Some(value) = default {
                     let default_bool = value.as_bool().unwrap();
@@ -333,11 +344,8 @@ fn write_struct(
                     writeln!(extra, "fn {}_is_default(x: bool) -> bool {{ x == {} }}", name, default_bool)?;
                 }
             },
-            "Enum" => {
-                let of = field["of"].as_str().unwrap();
-                writeln!(output, "  pub {}: Checked<::{}>,", name, of)?;
-            },
             "Any" => {
+                assert!(!optional);
                 writeln!(output, "  pub {}: Option<::std::boxed::Box<::serde::value::RawValue>>,", name)?;
             },
             unknown => panic!("unknown type '{}'", unknown),
@@ -490,17 +498,24 @@ fn write_struct_accessor(
                     _ => panic!("can't handle fixed size array of type '{}'", of),
                 }
             },
-            // Data types that don't support optional semantics:
-            "Bool" => {
-                writeln!(output, "  pub fn {}(&self) -> bool {{", name)?;
-                writeln!(output, "    self.{}", name)?;
+            "Enum" if optional => {
+                let of = field["of"].as_str().unwrap();
+                writeln!(output, "  pub fn {}(&self) -> Option<::{}> {{", name, of)?;
+                writeln!(output, "    self.{}.as_ref().map(|checked| checked.unwrap())", name)?;
             },
             "Enum" => {
                 let of = field["of"].as_str().unwrap();
                 writeln!(output, "  pub fn {}(&self) -> ::{} {{", name, of)?;
                 writeln!(output, "    self.{}.unwrap()", name)?;
             },
+            // Data types that don't support optional semantics:
+            "Bool" => {
+                assert!(!optional);
+                writeln!(output, "  pub fn {}(&self) -> bool {{", name)?;
+                writeln!(output, "    self.{}", name)?;
+            },
             "Any" => {
+                assert!(!optional);
                 writeln!(output, "  pub fn {}(&self) -> Option<&::serde::value::RawValue> {{", name)?;
                 writeln!(output, "    self.{}.as_ref().map(|boxed| &*boxed)", name)?;
             },
